@@ -2,6 +2,10 @@
     background: #eeeeee !important;
 }
 
+.h-fit{
+    height: fit-content !important;
+}
+
 /* Purchase page */
 .table-wrapper .table th,
 .table-wrapper .table td {
