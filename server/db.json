@@ -1,15 +1,38 @@
 {
   "categories": [
-    { "id": "cat-001", "name": "Computers & Laptops" },
-    { "id": "cat-002", "name": "Monitors & Displays" },
-    { "id": "cat-003", "name": "Keyboards & Mice" },
-    { "id": "cat-004", "name": "Cables & Adapters" },
-    { "id": "cat-005", "name": "Audio & Headsets" },
-    { "id": "cat-006", "name": "Networking" },
-    { "id": "cat-007", "name": "Storage Devices" },
-    { "id": "cat-008", "name": "Power & Charging" }
+    {
+      "id": "cat-001",
+      "name": "Computers & Laptops"
+    },
+    {
+      "id": "cat-002",
+      "name": "Monitors & Displays"
+    },
+    {
+      "id": "cat-003",
+      "name": "Keyboards & Mice"
+    },
+    {
+      "id": "cat-004",
+      "name": "Cables & Adapters"
+    },
+    {
+      "id": "cat-005",
+      "name": "Audio & Headsets"
+    },
+    {
+      "id": "cat-006",
+      "name": "Networking"
+    },
+    {
+      "id": "cat-007",
+      "name": "Storage Devices"
+    },
+    {
+      "id": "cat-008",
+      "name": "Power & Charging"
+    }
   ],
-
   "suppliers": [
     {
       "id": "sup-001",
@@ -40,7 +63,6 @@
       "email": "nour@digiimport.com"
     }
   ],
-
   "products": [
     {
       "id": "prod-001",
@@ -50,7 +72,7 @@
       "supplierId": "sup-001",
       "price": 45.99,
       "quantity": 25,
-      "reorderLevel": 10
+      "reorder": 10
     },
     {
       "id": "prod-002",
@@ -60,7 +82,7 @@
       "supplierId": "sup-002",
       "price": 189.99,
       "quantity": 12,
-      "reorderLevel": 5
+      "reorder": 5
     },
     {
       "id": "prod-003",
@@ -70,7 +92,7 @@
       "supplierId": "sup-001",
       "price": 79.99,
       "quantity": 18,
-      "reorderLevel": 8
+      "reorder": 8
     },
     {
       "id": "prod-004",
@@ -80,7 +102,7 @@
       "supplierId": "sup-003",
       "price": 34.99,
       "quantity": 3,
-      "reorderLevel": 10
+      "reorder": 10
     },
     {
       "id": "prod-005",
@@ -90,7 +112,7 @@
       "supplierId": "sup-004",
       "price": 9.99,
       "quantity": 60,
-      "reorderLevel": 20
+      "reorder": 20
     },
     {
       "id": "prod-006",
@@ -100,7 +122,7 @@
       "supplierId": "sup-002",
       "price": 39.99,
       "quantity": 2,
-      "reorderLevel": 8
+      "reorder": 8
     },
     {
       "id": "prod-007",
@@ -110,7 +132,7 @@
       "supplierId": "sup-001",
       "price": 129.99,
       "quantity": 9,
-      "reorderLevel": 5
+      "reorder": 5
     },
     {
       "id": "prod-008",
@@ -120,7 +142,7 @@
       "supplierId": "sup-003",
       "price": 54.99,
       "quantity": 14,
-      "reorderLevel": 5
+      "reorder": 5
     },
     {
       "id": "prod-009",
@@ -130,7 +152,7 @@
       "supplierId": "sup-004",
       "price": 89.99,
       "quantity": 4,
-      "reorderLevel": 6
+      "reorder": 6
     },
     {
       "id": "prod-010",
@@ -140,7 +162,7 @@
       "supplierId": "sup-002",
       "price": 24.99,
       "quantity": 33,
-      "reorderLevel": 15
+      "reorder": 15
     },
     {
       "id": "prod-011",
@@ -150,7 +172,7 @@
       "supplierId": "sup-001",
       "price": 69.99,
       "quantity": 7,
-      "reorderLevel": 5
+      "reorder": 5
     },
     {
       "id": "prod-012",
@@ -160,10 +182,9 @@
       "supplierId": "sup-003",
       "price": 19.99,
       "quantity": 40,
-      "reorderLevel": 10
+      "reorder": 10
     }
   ],
-
   "orders": [
     {
       "id": "ord-001",
@@ -202,7 +223,6 @@
       "receivedDate": "2026-02-27"
     }
   ],
-
   "adjustments": [
     {
       "id": "adj-001",
@@ -235,7 +255,6 @@
       "date": "2026-03-12T09:40:00.000Z"
     }
   ],
-
   "activity_log": [
     {
       "id": "log-001",
@@ -261,6 +280,16 @@
       "id": "log-005",
       "message": "New supplier added: DigiImport MENA",
       "timestamp": "2026-02-15T08:00:00.000Z"
+    },
+    {
+      "id": "f42e4bb0-7742-44c5-a408-4bce8c21254e",
+      "message": "sifyv: Added product: Rhona Ferguson",
+      "timestamp": "2026-03-23T22:46:50.467Z"
+    },
+    {
+      "id": "065d5160-db5c-48ee-b4e7-339364597413",
+      "message": "sifyv: Deleted product: Rhona Ferguson",
+      "timestamp": "2026-03-23T22:50:42.865Z"
     }
   ]
 }

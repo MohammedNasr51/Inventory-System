@@ -3,14 +3,30 @@ import { Validator } from "../utils/Validator.js";
 import { ActivityLogService } from "../services/ActivityLogService.js";
 export class ProductService {
   /************** getAll methoud***********/
-  getAll() {
-    return StorageManager.get("products") ?? [];
+  async getAll() {
+    let productsWithIds = await StorageManager.getAll("products");
+    productsWithIds = productsWithIds.map(async (product) => {
+      product.category = await StorageManager.getById("categories", product.categoryId);
+      product.supplier = await StorageManager.getById("suppliers", product.supplierId);
+      return product;
+    });
+
+    let products = await Promise.all(productsWithIds);
+    products = await Promise.all(products.map(async (product) => { 
+      return {
+        ...product,
+        category:  product.category ? product.category.name : null,
+        supplier:  product.supplier ? product.supplier.name : null,
+      };
+    }));
+
+    return products;
   }
 
   /**************add product methoud***********/
-  add(product) {
+  async add(product) {
     //getAll products
-    const products = this.getAll();
+    const products = await this.getAll();
 
     //check unique sku
     if (!Validator.isUniqueSKU(product.sku, products)) {
@@ -20,45 +36,58 @@ export class ProductService {
     //add id to product
     product.id = crypto.randomUUID();
 
-    //push product
-    products.push(product);
-
-    //add the product array to the local storage
-    StorageManager.set("products", products);
+    //create product in API
+    await StorageManager.create("products", product);
 
     //save the activity
-    ActivityLogService.log(`Added product: ${product.name}`);
+    await ActivityLogService.log(`Added product: ${product.name}`);
   }
 
   /**************delete product methoud***********/
-  delete(productId) {
-    //getAll products
-    const products = this.getAll();
-    //get the product i want to delete
-    const product = products.find((product) => product.id === productId);
-    if (!product) throw new Error("Product not found");
-    //delete product from array
-    const updatedProducts = products.filter(
-      (product) => product.id !== productId,
-    );
-    //update the local storage
-    StorageManager.set("products", updatedProducts);
+  async delete(productId) {
+    let product;
+    try {
+      product = await StorageManager.getById("products", productId);
+    } catch (err) {
+      throw new Error("Product not found");
+    }
+
+    //delete product
+    await StorageManager.delete("products", productId);
+
     //save the activity
-    ActivityLogService.log(`Deleted product: ${product.name}`);
+    await ActivityLogService.log(`Deleted product: ${product.name}`);
   }
 
   /**************edit product methoud***********/
-  edit(productId, updatedData) {
-    //getAll products
-    const products = this.getAll();
-    //get the product i want to delete
-    const product = products.find((product) => product.id === productId);
-    if (!product) throw new Error("Product not found");
-    //edit product from array
-    Object.assign(product, updatedData);
-    //update the local storage
-    StorageManager.set("products", products);
+  async edit(productId, updatedData) {
+    let product;
+    try {
+      product = await StorageManager.getById("products", productId);
+    } catch (err) {
+      throw new Error("Product not found");
+    }
+
+    // check unique sku if changed
+    if (updatedData.sku && updatedData.sku !== product.sku) {
+      const duplicates = await StorageManager.getWhere("products", {
+        sku: updatedData.sku,
+      });
+      // getWhere returns valid matches. If any exist (that aren't this one), duplicate.
+      // Since we filtered by SKU, any result is a potential duplicate.
+      // But maybe check ID just in case?
+      const isDuplicate = duplicates.some((d) => d.id !== productId);
+
+      if (isDuplicate) {
+        throw new Error("Duplicate SKU in Products");
+      }
+    }
+
+    //update via patch
+    await StorageManager.patch("products", productId, updatedData);
+
     //save the activity
-    ActivityLogService.log(`Edited product: ${product.name}`);
+    const newName = updatedData.name || product.name;
+    await ActivityLogService.log(`Edited product: ${newName}`);
   }
 }

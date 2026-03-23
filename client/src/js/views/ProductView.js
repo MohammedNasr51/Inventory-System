@@ -6,9 +6,7 @@ export class ProductView {
     this.productService = new ProductService();
     this.categoryService = new CategoryService();
   }
-  tempalte() {
-    const products = this.productService.getAll();
-    const categories = this.categoryService.getAll();
+  template(products, categories) {
     document.getElementById("page-title").innerText = "Products";
     return `
     
@@ -27,14 +25,14 @@ export class ProductView {
             (
               c,
             ) => `     <span class="badge bg-secondary me-2 mb-2 py-2 px-3 category-badge" style="font-size: 13px">
-                        <span class="btn-edit-category" data-category="${c}" 
+                        <span class="btn-edit-category" data-category="${c.name}" 
                             style="cursor:pointer;" title="Click to edit">
-                            ${c}
+                            ${c.name}
                         </span>
                         <button type="button"
                             class="btn-close btn-close-white ms-2 btn-delete-category"
                             style="font-size: 9px"
-                            data-category="${c}"
+                            data-category="${c.name}"
                             title="Delete">
                         </button>
                     </span>
@@ -122,7 +120,7 @@ export class ProductView {
               <label class="form-label">Category <span class="text-danger">*</span></label>
               <select id="product-category" class="form-select" required>
                 <option value="">-- Select category --</option>
-                ${categories.map((c) => `<option value="${c}">${c}</option>`).join("")}
+                ${categories.map((c) => `<option value="${c.name}">${c.name}</option>`).join("")}
               </select>
             </div>
             <!--  /****************add required*************/  -->
@@ -176,7 +174,7 @@ export class ProductView {
           <td>${product.category}</td>
           <td>${product.supplier ?? "--"}</td>
           <td>$${product.price}</td>
-          <td>${product.qty}</td>
+          <td>${product.quantity}</td>
           <td>${product.reorder}</td>
           <td><span class="badge ${badgeClass}">${statusText}</span></td>
           <td>
@@ -196,13 +194,13 @@ export class ProductView {
   }
 
   getStatus(product) {
-    if (product.qty < product.reorder) {
+    if (product.quantity < product.reorder) {
       return {
         rowClass: "table-danger",
         badgeClass: "bg-danger",
         statusText: "Low stock",
       };
-    } else if (product.qty === product.reorder) {
+    } else if (product.quantity === product.reorder) {
       return {
         rowClass: "table-warning",
         badgeClass: "bg-warning text-dark",
@@ -217,20 +215,20 @@ export class ProductView {
     // Add category event
     document
       .getElementById("btn-add-category")
-      .addEventListener("click", () => {
+      .addEventListener("click", async () => {
         const newCategory = document.getElementById("new-category-input");
         const error = document.getElementById("category-error");
         try {
           //check if input is empty
           if (!newCategory.value.trim()) {
-            new Error("Category is empty");
+            throw new Error("Category is empty");
           }
-          this.categoryService.add(newCategory.value.trim());
+          await this.categoryService.add(newCategory.value.trim());
           //clear input
           newCategory.value = "";
           //hide error div
           error.classList.add("d-none");
-          this.render(this.container);
+          await this.render(this.container);
         } catch (err) {
           error.textContent = err.message;
           error.classList.remove("d-none");
@@ -239,7 +237,7 @@ export class ProductView {
 
     // Delete category event
     document.querySelectorAll(".btn-delete-category").forEach((btn) => {
-      btn.addEventListener("click", (e) => {
+      btn.addEventListener("click", async (e) => {
         const error = document.getElementById("category-error");
         const category = e.currentTarget.dataset.category;
         e.currentTarget.blur();
@@ -250,10 +248,10 @@ export class ProductView {
         }
 
         try {
-          this.categoryService.delete(category);
+          await this.categoryService.delete(category);
           //hide error div
           error.classList.add("d-none");
-          this.render(this.container);
+          await this.render(this.container);
         } catch (err) {
           error.textContent = err.message;
           error.classList.remove("d-none");
@@ -281,18 +279,18 @@ export class ProductView {
         //confirm btn for edit
         badge
           .querySelector(".btn-confirm-edit")
-          .addEventListener("click", (e) => {
+          .addEventListener("click", async (e) => {
             const newCategory = badge.querySelector("input").value.trim();
             const error = document.getElementById("category-error");
             try {
               //check if input is empty
               if (!newCategory) {
-                new Error("Category is empty");
+                throw new Error("Category is empty");
               }
-              this.categoryService.edit(oldCategory, newCategory);
+              await this.categoryService.edit(oldCategory, newCategory);
               //hide error div
               error.classList.add("d-none");
-              this.render(this.container);
+              await this.render(this.container);
             } catch (err) {
               error.textContent = err.message;
               error.classList.remove("d-none");
@@ -301,13 +299,13 @@ export class ProductView {
         //cancle btn for edit
         badge
           .querySelector(".btn-cancel-edit")
-          .addEventListener("click", (e) => {
-            this.render(this.container);
+          .addEventListener("click", async (e) => {
+            await this.render(this.container);
           });
       });
     });
     // Add  , edit submit product event
-    document.getElementById("productForm").addEventListener("submit", (e) => {
+    document.getElementById("productForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       const error = document.getElementById("productFormError");
       const form = document.getElementById("productForm");
@@ -319,7 +317,7 @@ export class ProductView {
           category: document.getElementById("product-category").value,
           supplier: document.getElementById("product-supplier").value,
           price: parseFloat(document.getElementById("product-price").value),
-          qty: parseInt(document.getElementById("product-qty").value),
+          quantity: parseInt(document.getElementById("product-qty").value),
           reorder: parseInt(document.getElementById("product-reorder").value),
         };
 
@@ -327,20 +325,20 @@ export class ProductView {
 
         if (editProductId) {
           //  edit mode
-          this.productService.edit(editProductId, product);
+          await this.productService.edit(editProductId, product);
           delete form.dataset.editProductId; // clear after edit
           document.getElementById("productModalLabel").textContent =
             "Add product"; // reset title to add product
         } else {
           //add mode
-          this.productService.add(product);
+          await this.productService.add(product);
         }
 
         bootstrap.Modal.getInstance(
           document.getElementById("productModal"),
         ).hide();
         error.classList.add("d-none");
-        this.render(this.container);
+        await this.render(this.container);
       } catch (err) {
         error.textContent = err.message;
         error.classList.remove("d-none");
@@ -349,12 +347,12 @@ export class ProductView {
 
     //Delete product event
     document.querySelectorAll(".btn-delete-product").forEach((btn) => {
-      btn.addEventListener("click", (e) => {
+      btn.addEventListener("click", async (e) => {
         const id = e.currentTarget.dataset.id;
         if (!confirm("Are you sure you want to delete this product?")) return;
         try {
-          this.productService.delete(id);
-          this.render(this.container);
+          await this.productService.delete(id);
+          await this.render(this.container);
         } catch (err) {
           alert(err.message);
         }
@@ -366,7 +364,8 @@ export class ProductView {
     document.querySelectorAll(".btn-edit").forEach((btn) => {
       btn.addEventListener("click", (e) => {
         const id = e.currentTarget.dataset.id;
-        const products = this.productService.getAll();
+        const products = this.products || [];
+        console.log(products)
         const editProduct = products.find((p) => p.id === id);
         if (!editProduct) {
           //   throw new Error("Product id not found");
@@ -382,11 +381,11 @@ export class ProductView {
         document.getElementById("product-name").value = editProduct.name;
         document.getElementById("product-sku").value = editProduct.sku;
         document.getElementById("product-category").value =
-          editProduct.category;
+          editProduct.categoryId;
         document.getElementById("product-supplier").value =
-          editProduct.supplier;
+          editProduct.supplierId;
         document.getElementById("product-price").value = editProduct.price;
-        document.getElementById("product-qty").value = editProduct.qty;
+        document.getElementById("product-qty").value = editProduct.quantity;
         document.getElementById("product-reorder").value = editProduct.reorder;
       });
     });
@@ -406,7 +405,7 @@ export class ProductView {
       .getElementById("product-search")
       ?.addEventListener("input", (e) => {
         const searchTerm = e.target.value.trim().toUpperCase();
-        const products = this.productService.getAll();
+        const products = this.products || [];
 
         // filter products by name,sku,category
         const filteredProducts = products.filter(
@@ -422,9 +421,21 @@ export class ProductView {
       });
   }
   /******************************************************************************************************************* */
-  render(container) {
+  async render(container) {
     this.container = container; // save it
-    container.innerHTML = this.tempalte();
-    this.attachEvents();
+    try {
+      const [products, categories] = await Promise.all([
+        this.productService.getAll(),
+        this.categoryService.getAll(),
+      ]);
+      this.products = products; // Cache for search
+      this.categories = categories;
+
+      container.innerHTML = this.template(products, categories);
+      this.attachEvents();
+    } catch (err) {
+      console.error(err);
+      container.innerHTML = `<div class="alert alert-danger">Error loading data: ${err.message}</div>`;
+    }
   }
 }

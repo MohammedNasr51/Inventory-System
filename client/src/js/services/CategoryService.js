@@ -4,107 +4,105 @@ import { ActivityLogService } from "../services/ActivityLogService.js";
 
 export class CategoryService {
   /************** getAll methoud***********/
-  getAll() {
-    return StorageManager.get("categories") ?? [];
+  async getAll() {
+    return await StorageManager.getAll("categories");
   }
 
   /**************add category methoud***********/
-  add(category) {
+  async add(categoryName) {
     //getAll categories
-    const categories = this.getAll();
+    const categories = await this.getAll();
+
     //check category is empty or not
-    if (!category || !category.trim()) {
+    if (!categoryName || !categoryName.trim()) {
       throw new Error("Category name is empty");
     }
 
     //check unique category
     const duplicateCategory = categories.find(
-      (c) => c.toUpperCase() === category.toUpperCase(),
+      (c) => c.name.toUpperCase() === categoryName.toUpperCase(),
     );
     if (duplicateCategory) {
       throw new Error("Duplicate Category");
     }
-    //push category
-    categories.push(category);
 
-    //add the product array to the local storage
-    StorageManager.set("categories", categories);
+    //create category object
+    const newCategory = {
+      id: crypto.randomUUID(),
+      name: categoryName.trim(),
+    };
+
+    //add to storage
+    await StorageManager.create("categories", newCategory);
 
     //save the activity
-    ActivityLogService.log(`Added category: ${category}`);
+    await ActivityLogService.log(`Added category: ${categoryName}`);
   }
 
   /**************delete category methoud***********/
-  delete(category) {
-    //getAll categories
-    const categories = this.getAll();
-    //get the category i want to delete
-    const deletedCategory = categories.find(
-      (c) => c.toUpperCase() === category.toUpperCase(),
+  async delete(categoryName) {
+    const categories = await this.getAll();
+    const categoryObj = categories.find(
+      (c) => c.name.toUpperCase() === categoryName.toUpperCase(),
     );
-    if (!deletedCategory) throw new Error("Category not found");
+
+    if (!categoryObj) throw new Error("Category not found");
 
     //check if this category is in use or not
-    const products = StorageManager.get("products") ?? [];
+    const products = await StorageManager.getWhere("products", {
+      category: categoryObj.name,
+    });
 
-    const categoryInUse = products.find((p) => p.category === category);
-    if (categoryInUse)
+    if (products.length > 0)
       throw new Error(
-        `Cannot delete "${category}" it is used by existing products`,
+        `Cannot delete "${categoryName}" it is used by existing products`,
       );
-    //delete category from array
-    const updatedCategories = categories.filter(
-      (c) => c.toUpperCase() !== category.toUpperCase(),
-    );
-    //update the local storage
-    StorageManager.set("categories", updatedCategories);
+
+    //delete category
+    await StorageManager.delete("categories", categoryObj.id);
+
     //save the activity
-    ActivityLogService.log(`Deleted category: ${category}`);
+    await ActivityLogService.log(`Deleted category: ${categoryName}`);
   }
 
   /**************edit category methoud***********/
-  edit(category, updatedCategory) {
-    //getAll categories
-    const categories = this.getAll();
-    //get the category i want to edit
-
-    const editedCategory = categories.find(
-      (c) => c.toUpperCase() === category.toUpperCase(),
+  async edit(oldName, newName) {
+    const categories = await this.getAll();
+    const categoryObj = categories.find(
+      (c) => c.name.toUpperCase() === oldName.toUpperCase(),
     );
 
-    if (!editedCategory) throw new Error("Category not found");
+    if (!categoryObj) throw new Error("Category not found");
+
     //check if the update category name exist
     const duplicate = categories.find(
-      (c) => c.toUpperCase() === updatedCategory.toUpperCase(),
+      (c) => c.name.toUpperCase() === newName.toUpperCase(),
     );
     if (duplicate) throw new Error("Category already exists");
-    //edit product from array
-    const updatedCategories = categories.map((c) => {
-      if (c.toUpperCase() === category.toUpperCase()) {
-        return updatedCategory;
-      }
-      return c;
-    });
-    //update the local storage
-    StorageManager.set("categories", updatedCategories);
+
+    //patch category name
+    await StorageManager.patch("categories", categoryObj.id, { name: newName });
+
     //save the activity
-    ActivityLogService.log(
-      `Edited category from ${category} to ${updatedCategory}`,
+    await ActivityLogService.log(
+      `Edited category from ${oldName} to ${newName}`,
     );
+
     /***********************Update products that have old category name ******************** */
-    const products = StorageManager.get("products") ?? [];
-    const updateProducts = products.map((p) => {
-      if (p.category.toUpperCase() === category.toUpperCase()) {
-        return { ...p, category: updatedCategory };
-      } else {
-        return p;
-      }
+    const productsToUpdate = await StorageManager.getWhere("products", {
+      category: categoryObj.name,
     });
-    //update the local storage
-    StorageManager.set("products", updateProducts);
-    //save the activity
-    ActivityLogService.log(
-      `updated Products category name from ${category} to ${updatedCategory}`,
+
+    const updates = productsToUpdate.map((p) =>
+      StorageManager.patch("products", p.id, { category: newName }),
     );
+    await Promise.all(updates);
+
+    //save the activity
+    if (productsToUpdate.length > 0) {
+      await ActivityLogService.log(
+        `Updated products category name from ${oldName} to ${newName}`,
+      );
+    }
   }
 }

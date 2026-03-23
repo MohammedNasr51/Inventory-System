@@ -92,7 +92,7 @@ function initSidebarToggle() {
 export async function updateLowStockBadge() {
   try {
     const products = await StorageManager.getAll("products");
-    const count = products.filter((p) => p.quantity <= p.reorderLevel).length;
+    const count = products.filter((p) => p.quantity <= p.reorder).length;
     const badge = document.getElementById("low-stock-badge");
     if (!badge) return;
 
