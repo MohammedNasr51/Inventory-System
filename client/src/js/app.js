@@ -8,7 +8,7 @@ import { StorageManager } from "./utils/StorageManager.js";
 
 // ── View imports ─────────────────────────────────────────────────
 // import { DashboardView }      from './views/DashboardView.js';
-// import { ProductView }        from './views/ProductView.js';
+import { ProductView } from "./views/ProductView.js";
 // import { CategoryView }       from './views/CategoryView.js';
 // import { SupplierView }       from './views/SupplierView.js';
 // import { OrderView }          from './views/OrderView.js';
@@ -116,7 +116,7 @@ export async function updateLowStockBadge() {
 // ════════════════════════════════════════════════════════════════
 const routes = {
   // '#/dashboard'   : DashboardView,
-  // '#/products'    : ProductView,
+  '#/products'    : ProductView,
   // '#/categories'  : CategoryView,
   // '#/suppliers'   : SupplierView,
   // '#/orders'      : OrderView,
