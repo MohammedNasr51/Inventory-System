@@ -33,12 +33,12 @@
     </div>
 
     <div class="nav-section-label">Main menu</div>
-    <a href="dashboard.html" class="nav-link" data-section="dashboard">
+    <a href="dashboard.html" class="nav-link active" data-section="dashboard">
       <i class="bi bi-grid-1x2"></i> Dashboard
     </a>
     <a href="products.html" class="nav-link" data-section="products">
       <i class="bi bi-box-seam"></i> Products
-      <span class="nav-badge d-none" id="low-stock-badge">0</span>
+      <span class="nav-badge " id="low-stock-badge">3</span>
     </a>
     <a href="suppliers.html" class="nav-link" data-section="suppliers">
       <i class="bi bi-truck"></i> Suppliers
@@ -48,7 +48,7 @@
     </a>
 
     <div class="nav-section-label">Inventory</div>
-    <a href="adjustments.html" class="nav-link active" data-section="adjustments">
+    <a href="adjustments.html" class="nav-link" data-section="adjustments">
       <i class="bi bi-arrow-left-right"></i> Adjustments
     </a>
     <a href="reports.html" class="nav-link" data-section="reports">
@@ -86,7 +86,7 @@
     <!-- Top bar -->
     <div id="topbar">
       <button id="sidebar-toggle"><i class="bi bi-list"></i></button>
-      <h1 id="page-title">Adjustments</h1>
+      <h1 id="page-title">Dashboard</h1>
       <div class="ms-auto d-flex align-items-center gap-2">
         <span style="font-size:12px;color:#94a3b8">Data stored locally</span>
         <i class="bi bi-lock-fill" style="color:#94a3b8;font-size:13px"></i>
@@ -99,64 +99,72 @@
       <!-- ──────────────────────────────────────────────────
            DASHBOARD  (Member 1 — updateDashboard() in app.js)
            ────────────────────────────────────────────────── -->
-      <div id="section-adjustments" class="page-section ">
+      <div id="section-dashboard" class="page-section">
+
+        <!-- Stat cards -->
+        <div class="stats-grid mb-4" style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px">
+          <div class="stat-card">
+            <div class="stat-icon" style="background:#e0f2fe;color:#0369a1"><i class="bi bi-box-seam-fill"></i></div>
+            <div>
+              <div class="stat-label">Total products</div>
+              <div class="stat-value" id="dash-total-products">8</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon" style="background:#fef2f2;color:#dc2626"><i class="bi bi-exclamation-triangle-fill"></i></div>
+            <div>
+              <div class="stat-label">Low stock alerts</div>
+              <div class="stat-value text-danger" id="dash-low-stock">3</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon" style="background:#fffbeb;color:#d97706"><i class="bi bi-cart-fill"></i></div>
+            <div>
+              <div class="stat-label">Pending orders</div>
+              <div class="stat-value text-warning" id="dash-pending-orders">2</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon" style="background:#f0fdf4;color:#16a34a"><i class="bi bi-currency-dollar"></i></div>
+            <div>
+              <div class="stat-label">Inventory value</div>
+              <div class="stat-value text-success" id="dash-inventory-value">$5979.17</div>
+            </div>
+          </div>
+        </div>
+
         <div class="row g-3">
-          <div class="col-lg-5">
+          <div class="col-lg-7">
             <div class="card">
-              <div class="card-header"><i class="bi bi-arrow-left-right me-2"></i>New stock adjustment</div>
-              <div class="card-body">
-                <form id="adjForm" novalidate>
-                  <div class="mb-3">
-                    <label class="form-label">Product <span class="text-danger">*</span></label>
-                    <select id="adj-product" name="productId" class="form-select">
-  <option value="">Select a product...</option>
-  <option value="p1">Laptop Stand (LS-001) — current: 25</option>
-  <option value="p2">USB-C Hub (USB-009) — current: 2</option>
-  <option value="p3">Mechanical Keyboard (KB-003) — current: 18</option>
-</select>
-                  </div>
-                  <div class="row g-2 mb-3">
-                    <div class="col-6">
-                      <label class="form-label">Adjustment type <span class="text-danger">*</span></label>
-                      <select id="adj-type" name="type" class="form-select">
-                        <option value="increase">Increase ▲</option>
-                        <option value="decrease">Decrease ▼</option>
-                      </select>
-                    </div>
-                    <div class="col-6">
-                      <label class="form-label">Quantity <span class="text-danger">*</span></label>
-                      <input type="number" id="adj-amount" name="qty" class="form-control" min="1" value="" placeholder="e.g. 10" />
-                    </div>
-                  </div>
-                  <div class="mb-3">
-                    <label class="form-label">Reason <span class="text-danger">*</span></label>
-                    <textarea id="adj-reason" name="reason" class="form-control" rows="2" placeholder="e.g. Damaged in warehouse, stocktake correction…"></textarea>
-                  </div>
-
-                  <div id="adj-preview" class="alert alert-info d-none mb-3" style="font-size:13px"></div>
-                  <div id="adjError" class="alert alert-danger d-none mb-3" style="font-size:13px"></div>
-
-                  <button id="adj-submit" type="submit" class="btn btn-primary w-100">
-                    <i class="bi bi-check-lg me-1"></i>Save adjustment
-                  </button>
-                </form>
+              <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-exclamation-triangle text-danger me-2"></i>Low stock items</span>
+                <a href="#" class="text-primary text-decoration-none" style="font-size:12px" data-section="reports">View full report →</a>
+              </div>
+              <div class="card-body p-0">
+                <table class="table mb-0">
+                  <thead><tr><th>Product</th><th class="text-center">Qty</th><th class="text-center">Reorder at</th><th>Status</th></tr></thead>
+                  <tbody id="dash-lowstock-tbody">
+  <tr class="table-danger"><td>USB-C Hub</td><td class="text-center">2</td><td class="text-center">10</td><td><span class="badge bg-danger">Low</span></td></tr>
+  <tr class="table-warning"><td>Wireless Mouse</td><td class="text-center">5</td><td class="text-center">5</td><td><span class="badge bg-warning text-dark">At limit</span></td></tr>
+  <tr class="table-danger"><td>HDMI Cable</td><td class="text-center">3</td><td class="text-center">15</td><td><span class="badge bg-danger">Low</span></td></tr>
+</tbody>
+                </table>
               </div>
             </div>
           </div>
-          <div class="col-lg-7">
+          <div class="col-lg-5">
             <div class="card">
-              <div class="card-header"><i class="bi bi-clock-history me-2"></i>Adjustment history</div>
+              <div class="card-header"><i class="bi bi-clock-history me-2"></i>Recent activity</div>
               <div class="card-body p-0">
-                <div class="table-responsive-wrapper">
-                  <table class="table mb-0">
-                    <thead><tr><th>Product</th><th>Type</th><th>Change</th><th>Reason</th><th>Date</th></tr></thead>
-                    <tbody id="adj-history-tbody">
-  <tr><td><div>HDMI Cable</div><div class="text-muted mt-1" style="font-size:11px">CB-005</div></td><td><span class="badge bg-danger">Decrease</span></td><td class="text-danger">-5</td><td>Damaged in warehouse</td><td class="text-muted" style="font-size:12px">2025-03-13</td></tr>
-  <tr><td><div>Monitor 24"</div><div class="text-muted mt-1" style="font-size:11px">MN-002</div></td><td><span class="badge bg-success">Increase</span></td><td class="text-success">+3</td><td>Stocktake correction</td><td class="text-muted" style="font-size:12px">2025-03-13</td></tr>
-  <tr><td><div>Wireless Mouse</div><div class="text-muted mt-1" style="font-size:11px">MS-011</div></td><td><span class="badge bg-danger">Decrease</span></td><td class="text-danger">-2</td><td>Returned — faulty unit</td><td class="text-muted" style="font-size:12px">2025-03-12</td></tr>
+                <table class="table mb-0">
+                  <thead><tr><th>Time</th><th>Action</th><th>Details</th></tr></thead>
+                  <tbody id="dash-activity-tbody">
+  <tr><td class="text-muted" style="font-size:11px;white-space:nowrap">09:14</td><td style="font-size:13px">Product added</td><td style="font-size:13px">Laptop Stand — SKU: LS-001</td></tr>
+  <tr><td class="text-muted" style="font-size:11px;white-space:nowrap">08:52</td><td style="font-size:13px">Order received</td><td style="font-size:13px">PO-004 — 30× Laptop Stand from Global Supplies</td></tr>
+  <tr><td class="text-muted" style="font-size:11px;white-space:nowrap">08:31</td><td style="font-size:13px">Stock adjusted</td><td style="font-size:13px">HDMI Cable decreased by 5 — Damaged in warehouse</td></tr>
+  <tr><td class="text-muted" style="font-size:11px;white-space:nowrap">16:45</td><td style="font-size:13px">Supplier edited</td><td style="font-size:13px">TechWorld Ltd — contact info updated</td></tr>
 </tbody>
-                  </table>
-                </div>
+                </table>
               </div>
             </div>
           </div>
@@ -164,7 +172,7 @@
       </div>
 
       <!-- ──────────────────────────────────────────────────
-           REPORTS  (Member 4)
+           PRODUCTS  (Member 1)
            ────────────────────────────────────────────────── -->
       
 

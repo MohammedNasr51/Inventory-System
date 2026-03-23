@@ -40,7 +40,7 @@
       <i class="bi bi-box-seam"></i> Products
       <span class="nav-badge d-none" id="low-stock-badge">0</span>
     </a>
-    <a href="suppliers.html" class="nav-link" data-section="suppliers">
+    <a href="suppliers.html" class="nav-link active" data-section="suppliers">
       <i class="bi bi-truck"></i> Suppliers
     </a>
     <a href="orders.html" class="nav-link" data-section="orders">
@@ -48,7 +48,7 @@
     </a>
 
     <div class="nav-section-label">Inventory</div>
-    <a href="adjustments.html" class="nav-link active" data-section="adjustments">
+    <a href="adjustments.html" class="nav-link" data-section="adjustments">
       <i class="bi bi-arrow-left-right"></i> Adjustments
     </a>
     <a href="reports.html" class="nav-link" data-section="reports">
@@ -86,7 +86,7 @@
     <!-- Top bar -->
     <div id="topbar">
       <button id="sidebar-toggle"><i class="bi bi-list"></i></button>
-      <h1 id="page-title">Adjustments</h1>
+      <h1 id="page-title">Suppliers</h1>
       <div class="ms-auto d-flex align-items-center gap-2">
         <span style="font-size:12px;color:#94a3b8">Data stored locally</span>
         <i class="bi bi-lock-fill" style="color:#94a3b8;font-size:13px"></i>
@@ -99,72 +99,37 @@
       <!-- ──────────────────────────────────────────────────
            DASHBOARD  (Member 1 — updateDashboard() in app.js)
            ────────────────────────────────────────────────── -->
-      <div id="section-adjustments" class="page-section ">
-        <div class="row g-3">
-          <div class="col-lg-5">
-            <div class="card">
-              <div class="card-header"><i class="bi bi-arrow-left-right me-2"></i>New stock adjustment</div>
-              <div class="card-body">
-                <form id="adjForm" novalidate>
-                  <div class="mb-3">
-                    <label class="form-label">Product <span class="text-danger">*</span></label>
-                    <select id="adj-product" name="productId" class="form-select">
-  <option value="">Select a product...</option>
-  <option value="p1">Laptop Stand (LS-001) — current: 25</option>
-  <option value="p2">USB-C Hub (USB-009) — current: 2</option>
-  <option value="p3">Mechanical Keyboard (KB-003) — current: 18</option>
-</select>
-                  </div>
-                  <div class="row g-2 mb-3">
-                    <div class="col-6">
-                      <label class="form-label">Adjustment type <span class="text-danger">*</span></label>
-                      <select id="adj-type" name="type" class="form-select">
-                        <option value="increase">Increase ▲</option>
-                        <option value="decrease">Decrease ▼</option>
-                      </select>
-                    </div>
-                    <div class="col-6">
-                      <label class="form-label">Quantity <span class="text-danger">*</span></label>
-                      <input type="number" id="adj-amount" name="qty" class="form-control" min="1" value="" placeholder="e.g. 10" />
-                    </div>
-                  </div>
-                  <div class="mb-3">
-                    <label class="form-label">Reason <span class="text-danger">*</span></label>
-                    <textarea id="adj-reason" name="reason" class="form-control" rows="2" placeholder="e.g. Damaged in warehouse, stocktake correction…"></textarea>
-                  </div>
-
-                  <div id="adj-preview" class="alert alert-info d-none mb-3" style="font-size:13px"></div>
-                  <div id="adjError" class="alert alert-danger d-none mb-3" style="font-size:13px"></div>
-
-                  <button id="adj-submit" type="submit" class="btn btn-primary w-100">
-                    <i class="bi bi-check-lg me-1"></i>Save adjustment
-                  </button>
-                </form>
+      <div id="section-suppliers" class="page-section ">
+        <div class="card">
+          <div class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
+            <span><i class="bi bi-truck me-2"></i>Suppliers</span>
+            <div class="d-flex gap-2">
+              <div class="search-wrapper">
+                <i class="bi bi-search"></i>
+                <input type="text" id="supplier-search" class="form-control form-control-sm" placeholder="Search suppliers…" style="width:200px" />
               </div>
+              <button id="btn-add-supplier" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#supplierModal">
+                <i class="bi bi-plus-lg me-1"></i>Add supplier
+              </button>
             </div>
           </div>
-          <div class="col-lg-7">
-            <div class="card">
-              <div class="card-header"><i class="bi bi-clock-history me-2"></i>Adjustment history</div>
-              <div class="card-body p-0">
-                <div class="table-responsive-wrapper">
-                  <table class="table mb-0">
-                    <thead><tr><th>Product</th><th>Type</th><th>Change</th><th>Reason</th><th>Date</th></tr></thead>
-                    <tbody id="adj-history-tbody">
-  <tr><td><div>HDMI Cable</div><div class="text-muted mt-1" style="font-size:11px">CB-005</div></td><td><span class="badge bg-danger">Decrease</span></td><td class="text-danger">-5</td><td>Damaged in warehouse</td><td class="text-muted" style="font-size:12px">2025-03-13</td></tr>
-  <tr><td><div>Monitor 24"</div><div class="text-muted mt-1" style="font-size:11px">MN-002</div></td><td><span class="badge bg-success">Increase</span></td><td class="text-success">+3</td><td>Stocktake correction</td><td class="text-muted" style="font-size:12px">2025-03-13</td></tr>
-  <tr><td><div>Wireless Mouse</div><div class="text-muted mt-1" style="font-size:11px">MS-011</div></td><td><span class="badge bg-danger">Decrease</span></td><td class="text-danger">-2</td><td>Returned — faulty unit</td><td class="text-muted" style="font-size:12px">2025-03-12</td></tr>
+          <div class="card-body p-0">
+            <div class="table-responsive-wrapper">
+              <table class="table mb-0">
+                <thead><tr><th>Company name</th><th>Contact person</th><th>Phone</th><th>Email</th><th>Products</th><th>Actions</th></tr></thead>
+                <tbody id="suppliers-tbody">
+  <tr><td>TechWorld Ltd</td><td>Ahmed Hassan</td><td>+20 100 123 4567</td><td>ahmed@techworld.eg</td><td><span class="badge bg-info text-dark rounded-pill">5</span></td><td><button class="btn btn-sm btn-outline-primary me-1" data-bs-toggle="modal" data-bs-target="#supplierModal"><i class="bi bi-pencil"></i></button><button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button></td></tr>
+  <tr><td>Cairo Paper Co.</td><td>Sara Nour</td><td>+20 112 987 6543</td><td>sara@cairopaper.eg</td><td><span class="badge bg-info text-dark rounded-pill">1</span></td><td><button class="btn btn-sm btn-outline-primary me-1" data-bs-toggle="modal" data-bs-target="#supplierModal"><i class="bi bi-pencil"></i></button><button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button></td></tr>
+  <tr><td>Global Supplies</td><td>Mona Fawzy</td><td>+20 122 456 7890</td><td>mona@globalsup.com</td><td><span class="badge bg-info text-dark rounded-pill">2</span></td><td><button class="btn btn-sm btn-outline-primary me-1" data-bs-toggle="modal" data-bs-target="#supplierModal"><i class="bi bi-pencil"></i></button><button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button></td></tr>
 </tbody>
-                  </table>
-                </div>
-              </div>
+              </table>
             </div>
           </div>
         </div>
       </div>
 
       <!-- ──────────────────────────────────────────────────
-           REPORTS  (Member 4)
+           PURCHASE ORDERS  (Member 2)
            ────────────────────────────────────────────────── -->
       
 

@@ -48,7 +48,7 @@
     </a>
 
     <div class="nav-section-label">Inventory</div>
-    <a href="adjustments.html" class="nav-link active" data-section="adjustments">
+    <a href="adjustments.html" class="nav-link" data-section="adjustments">
       <i class="bi bi-arrow-left-right"></i> Adjustments
     </a>
     <a href="reports.html" class="nav-link" data-section="reports">
@@ -56,7 +56,7 @@
     </a>
 
     <div class="nav-section-label">System</div>
-    <a href="log.html" class="nav-link" data-section="log">
+    <a href="log.html" class="nav-link active" data-section="log">
       <i class="bi bi-clock-history"></i> Activity log
       <span class="nav-badge d-none" id="log-nav-badge">0</span>
     </a>
@@ -86,7 +86,7 @@
     <!-- Top bar -->
     <div id="topbar">
       <button id="sidebar-toggle"><i class="bi bi-list"></i></button>
-      <h1 id="page-title">Adjustments</h1>
+      <h1 id="page-title">Activity Log</h1>
       <div class="ms-auto d-flex align-items-center gap-2">
         <span style="font-size:12px;color:#94a3b8">Data stored locally</span>
         <i class="bi bi-lock-fill" style="color:#94a3b8;font-size:13px"></i>
@@ -99,74 +99,32 @@
       <!-- ──────────────────────────────────────────────────
            DASHBOARD  (Member 1 — updateDashboard() in app.js)
            ────────────────────────────────────────────────── -->
-      <div id="section-adjustments" class="page-section ">
-        <div class="row g-3">
-          <div class="col-lg-5">
-            <div class="card">
-              <div class="card-header"><i class="bi bi-arrow-left-right me-2"></i>New stock adjustment</div>
-              <div class="card-body">
-                <form id="adjForm" novalidate>
-                  <div class="mb-3">
-                    <label class="form-label">Product <span class="text-danger">*</span></label>
-                    <select id="adj-product" name="productId" class="form-select">
-  <option value="">Select a product...</option>
-  <option value="p1">Laptop Stand (LS-001) — current: 25</option>
-  <option value="p2">USB-C Hub (USB-009) — current: 2</option>
-  <option value="p3">Mechanical Keyboard (KB-003) — current: 18</option>
-</select>
-                  </div>
-                  <div class="row g-2 mb-3">
-                    <div class="col-6">
-                      <label class="form-label">Adjustment type <span class="text-danger">*</span></label>
-                      <select id="adj-type" name="type" class="form-select">
-                        <option value="increase">Increase ▲</option>
-                        <option value="decrease">Decrease ▼</option>
-                      </select>
-                    </div>
-                    <div class="col-6">
-                      <label class="form-label">Quantity <span class="text-danger">*</span></label>
-                      <input type="number" id="adj-amount" name="qty" class="form-control" min="1" value="" placeholder="e.g. 10" />
-                    </div>
-                  </div>
-                  <div class="mb-3">
-                    <label class="form-label">Reason <span class="text-danger">*</span></label>
-                    <textarea id="adj-reason" name="reason" class="form-control" rows="2" placeholder="e.g. Damaged in warehouse, stocktake correction…"></textarea>
-                  </div>
-
-                  <div id="adj-preview" class="alert alert-info d-none mb-3" style="font-size:13px"></div>
-                  <div id="adjError" class="alert alert-danger d-none mb-3" style="font-size:13px"></div>
-
-                  <button id="adj-submit" type="submit" class="btn btn-primary w-100">
-                    <i class="bi bi-check-lg me-1"></i>Save adjustment
-                  </button>
-                </form>
-              </div>
+      <div id="section-log" class="page-section ">
+        <div class="card">
+          <div class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
+            <span><i class="bi bi-clock-history me-2"></i>Activity log</span>
+            <div class="search-wrapper">
+              <i class="bi bi-search"></i>
+              <input type="text" id="log-search" class="form-control form-control-sm" placeholder="Search log…" style="width:220px" />
             </div>
           </div>
-          <div class="col-lg-7">
-            <div class="card">
-              <div class="card-header"><i class="bi bi-clock-history me-2"></i>Adjustment history</div>
-              <div class="card-body p-0">
-                <div class="table-responsive-wrapper">
-                  <table class="table mb-0">
-                    <thead><tr><th>Product</th><th>Type</th><th>Change</th><th>Reason</th><th>Date</th></tr></thead>
-                    <tbody id="adj-history-tbody">
-  <tr><td><div>HDMI Cable</div><div class="text-muted mt-1" style="font-size:11px">CB-005</div></td><td><span class="badge bg-danger">Decrease</span></td><td class="text-danger">-5</td><td>Damaged in warehouse</td><td class="text-muted" style="font-size:12px">2025-03-13</td></tr>
-  <tr><td><div>Monitor 24"</div><div class="text-muted mt-1" style="font-size:11px">MN-002</div></td><td><span class="badge bg-success">Increase</span></td><td class="text-success">+3</td><td>Stocktake correction</td><td class="text-muted" style="font-size:12px">2025-03-13</td></tr>
-  <tr><td><div>Wireless Mouse</div><div class="text-muted mt-1" style="font-size:11px">MS-011</div></td><td><span class="badge bg-danger">Decrease</span></td><td class="text-danger">-2</td><td>Returned — faulty unit</td><td class="text-muted" style="font-size:12px">2025-03-12</td></tr>
+          <div class="card-body p-0">
+            <div class="table-responsive-wrapper">
+              <table class="table mb-0">
+                <thead><tr><th style="width:160px">Timestamp</th><th style="width:180px">Action</th><th>Details</th></tr></thead>
+                <tbody id="log-tbody">
+  <tr><td class="text-muted" style="font-size:12px">2025-03-14 09:14</td><td><span class="badge bg-primary">Product added</span></td><td>Laptop Stand — SKU: LS-001</td></tr>
+  <tr><td class="text-muted" style="font-size:12px">2025-03-14 08:52</td><td><span class="badge bg-success">Order received</span></td><td>PO-004 — 30× Laptop Stand from Global Supplies</td></tr>
+  <tr><td class="text-muted" style="font-size:12px">2025-03-14 08:31</td><td><span class="badge bg-warning text-dark">Stock adjusted</span></td><td>HDMI Cable decreased by 5 — Damaged in warehouse</td></tr>
+  <tr><td class="text-muted" style="font-size:12px">2025-03-13 16:45</td><td><span class="badge bg-secondary">Supplier edited</span></td><td>TechWorld Ltd — contact info updated</td></tr>
+  <tr><td class="text-muted" style="font-size:12px">2025-03-13 14:20</td><td><span class="badge bg-success">Order received</span></td><td>PO-003 — 200× Notebook Pack from Cairo Paper Co.</td></tr>
+  <tr><td class="text-muted" style="font-size:12px">2025-03-13 11:05</td><td><span class="badge bg-warning text-dark">Stock adjusted</span></td><td>Wireless Mouse decreased by 2 — Returned faulty</td></tr>
 </tbody>
-                  </table>
-                </div>
-              </div>
+              </table>
             </div>
           </div>
         </div>
       </div>
-
-      <!-- ──────────────────────────────────────────────────
-           REPORTS  (Member 4)
-           ────────────────────────────────────────────────── -->
-      
 
     </div><!-- /content -->
   </div><!-- /main-area -->
