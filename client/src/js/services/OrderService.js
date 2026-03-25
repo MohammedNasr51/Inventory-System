@@ -32,17 +32,14 @@ export class OrderService {
     if (!product) return { ok: false, error: 'Selected product does not exist.' };
 
     const order = {
-      id           : crypto.randomUUID(),
-      supplierId   : data.supplierId,
-      supplierName : supplier.name,
-      productId    : data.productId,
-      productName  : product.name,
-      productSku   : product.sku,
-      quantity     : Number(data.quantity),
-      orderDate    : data.orderDate,
-      status       : 'Pending',
-      receivedDate : null,
-      createdAt    : new Date().toISOString(),
+      id          : crypto.randomUUID(),
+      supplierId  : data.supplierId,
+      productId   : data.productId,
+      quantity    : Number(data.quantity),
+      orderDate   : data.orderDate,
+      status      : 'Pending',
+      receivedDate: null,
+      createdAt   : new Date().toISOString(),
     };
 
     const created = await StorageManager.create(RESOURCE, order);
@@ -83,7 +80,7 @@ export class OrderService {
 
     await ActivityLogService.log(
       'order_received',
-      `Order received: ${order.productName} +${order.quantity} units from ${order.supplierName}`
+      `Order received: productId=${order.productId} +${order.quantity} units from supplierId=${order.supplierId}`
     );
 
     return { ok: true, order: updated };
@@ -107,7 +104,7 @@ export class OrderService {
 
     await ActivityLogService.log(
       'order_cancel',
-      `Order cancelled: ${order.productName} from ${order.supplierName}`
+      `Order cancelled: productId=${order.productId} from supplierId=${order.supplierId}`
     );
 
     return { ok: true, order: updated };
@@ -125,7 +122,7 @@ export class OrderService {
 
     await ActivityLogService.log(
       'order_delete',
-      `Order deleted: ${order.productName} from ${order.supplierName}`
+      `Order deleted: productId=${order.productId} from supplierId=${order.supplierId}`
     );
 
     return { ok: true };
