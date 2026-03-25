@@ -6,13 +6,14 @@ export class ActivityLogService {
 
   // Called by every service after a successful action.
   // fire-and-forget — callers don't need to await this.
-  static async log(message) {
+  static async log(action,message) {
     message = `${sessionStorage.getItem('user_name') || 'Unknown user'}: ${message}`;
     try {
       await StorageManager.create('activity_log', {
         id        : crypto.randomUUID(),
         message,
-        timestamp : new Date().toISOString(),
+        timestamp: new Date().toISOString(),
+        action
       });
     } catch (err) {
       // Log failure should never crash the main operation

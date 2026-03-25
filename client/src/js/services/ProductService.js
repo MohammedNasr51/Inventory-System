@@ -39,7 +39,7 @@ export class ProductService {
     await StorageManager.create("products", product);
 
     //save the activity
-    await ActivityLogService.log(`Added product: ${product.name}`);
+    await ActivityLogService.log('product added',`Added product: ${product.name}`);
   }
 
   /**************delete product methoud***********/
@@ -55,7 +55,7 @@ export class ProductService {
     await StorageManager.delete("products", productId);
 
     //save the activity
-    await ActivityLogService.log(`Deleted product: ${product.name}`);
+    await ActivityLogService.log('product deleted',`Deleted product: ${product.name}`);
   }
 
   /**************edit product methoud***********/
@@ -87,6 +87,6 @@ export class ProductService {
 
     //save the activity
     const newName = updatedData.name || product.name;
-    await ActivityLogService.log(`Edited product: ${newName}`);
+    await ActivityLogService.log('product edited',`Edited product: ${newName}`);
   }
 }

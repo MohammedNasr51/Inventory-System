@@ -14,7 +14,7 @@ import { ProductView } from "./views/ProductView.js";
 // import { OrderView }          from './views/OrderView.js';
 import { StockAdjustView } from "./views/StockAdjustView.js";
 // import { ReportsView }        from './views/ReportsView.js';
-// import { ActivityLogView }    from './views/ActivityLogView.js';
+import { ActivityLogView }    from './views/ActivityLogView.js';
 
 // ════════════════════════════════════════════════════════════════
 // 1. AUTH GUARD
@@ -107,7 +107,7 @@ const routes = {
   // '#/orders'      : OrderView,
   "#/adjustments": StockAdjustView,
   // '#/reports'     : ReportsView,
-  // '#/log'         : ActivityLogView,
+  '#/log'         : ActivityLogView,
 };
 
 // ════════════════════════════════════════════════════════════════

@@ -71,8 +71,9 @@
       "categoryId": "cat-001",
       "supplierId": "sup-001",
       "price": 45.99,
-      "quantity": 25,
-      "reorder": 10
+      "quantity": 30,
+      "reorder": 10,
+      "category": "Computers & Laptops"
     },
     {
       "id": "prod-002",
@@ -82,7 +83,8 @@
       "supplierId": "sup-002",
       "price": 189.99,
       "quantity": 12,
-      "reorder": 5
+      "reorder": 5,
+      "category": "Computers & Laptops"
     },
     {
       "id": "prod-003",
@@ -92,7 +94,8 @@
       "supplierId": "sup-001",
       "price": 79.99,
       "quantity": 18,
-      "reorder": 8
+      "reorder": 8,
+      "category": "Computers & Laptops"
     },
     {
       "id": "prod-004",
@@ -101,8 +104,9 @@
       "categoryId": "cat-003",
       "supplierId": "sup-003",
       "price": 34.99,
-      "quantity": 3,
-      "reorder": 10
+      "quantity": 33,
+      "reorder": 10,
+      "category": "Computers & Laptops"
     },
     {
       "id": "prod-005",
@@ -112,7 +116,8 @@
       "supplierId": "sup-004",
       "price": 9.99,
       "quantity": 60,
-      "reorder": 20
+      "reorder": 20,
+      "category": "Computers & Laptops"
     },
     {
       "id": "prod-006",
@@ -122,7 +127,8 @@
       "supplierId": "sup-002",
       "price": 39.99,
       "quantity": 2,
-      "reorder": 8
+      "reorder": 8,
+      "category": "Computers & Laptops"
     },
     {
       "id": "prod-007",
@@ -132,7 +138,8 @@
       "supplierId": "sup-001",
       "price": 129.99,
       "quantity": 9,
-      "reorder": 5
+      "reorder": 5,
+      "category": "Computers & Laptops"
     },
     {
       "id": "prod-008",
@@ -152,7 +159,8 @@
       "supplierId": "sup-004",
       "price": 89.99,
       "quantity": 4,
-      "reorder": 6
+      "reorder": 6,
+      "category": "Computers & Laptops"
     },
     {
       "id": "prod-010",
@@ -162,7 +170,8 @@
       "supplierId": "sup-002",
       "price": 24.99,
       "quantity": 33,
-      "reorder": 15
+      "reorder": 15,
+      "category": "Computers && Laptops"
     },
     {
       "id": "prod-011",
@@ -172,7 +181,8 @@
       "supplierId": "sup-001",
       "price": 69.99,
       "quantity": 7,
-      "reorder": 5
+      "reorder": 5,
+      "category": "Computers & Laptops"
     },
     {
       "id": "prod-012",
@@ -182,7 +192,8 @@
       "supplierId": "sup-003",
       "price": 19.99,
       "quantity": 40,
-      "reorder": 10
+      "reorder": 10,
+      "category": "Computers & Laptops"
     }
   ],
   "orders": [
@@ -253,43 +264,116 @@
       "quantity": 2,
       "reason": "Returned — faulty unit",
       "date": "2026-03-12T09:40:00.000Z"
+    },
+    {
+      "id": "90b065c4-54be-4a2d-8704-ca209120e46e",
+      "productId": "prod-001",
+      "productName": "Laptop Stand Aluminium",
+      "type": "increase",
+      "quantity": 5,
+      "reason": "found some hidden in some were",
+      "date": "2026-03-25T19:24:29.307Z"
+    },
+    {
+      "id": "d6d7ca47-9184-4c71-b16d-32b194d4f323",
+      "productId": "prod-004",
+      "productName": "Wireless Mouse Ergonomic",
+      "type": "increase",
+      "quantity": 30,
+      "reason": "sdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsd",
+      "date": "2026-03-25T19:25:52.806Z"
     }
   ],
   "activity_log": [
     {
       "id": "log-001",
       "message": "Stock adjusted: \"Wireless Mouse Ergonomic\" -2 (Returned — faulty unit). New qty: 3",
-      "timestamp": "2026-03-12T09:40:00.000Z"
+      "timestamp": "2026-03-12T09:40:00.000Z",
+      "action": "stock adjustment"
     },
     {
       "id": "log-002",
       "message": "Stock adjusted: \"Monitor 24\\\" Full HD\" +3 (Stocktake correction). New qty: 12",
-      "timestamp": "2026-03-13T11:05:00.000Z"
+      "timestamp": "2026-03-13T11:05:00.000Z",
+      "action": "stock adjustment"
     },
     {
       "id": "log-003",
       "message": "Stock adjusted: \"HDMI Cable 2m\" -5 (Damaged in warehouse). New qty: 60",
-      "timestamp": "2026-03-13T10:22:00.000Z"
+      "timestamp": "2026-03-13T10:22:00.000Z",
+      "action": "stock adjustment"
     },
     {
       "id": "log-004",
       "message": "Purchase order ord-004 marked as received — WiFi Router AC1200 +8 units",
-      "timestamp": "2026-02-27T14:30:00.000Z"
+      "timestamp": "2026-02-27T14:30:00.000Z",
+      "action": "order received"
     },
     {
       "id": "log-005",
       "message": "New supplier added: DigiImport MENA",
-      "timestamp": "2026-02-15T08:00:00.000Z"
+      "timestamp": "2026-02-15T08:00:00.000Z",
+      "action": "supplier added"
     },
     {
       "id": "f42e4bb0-7742-44c5-a408-4bce8c21254e",
       "message": "sifyv: Added product: Rhona Ferguson",
-      "timestamp": "2026-03-23T22:46:50.467Z"
+      "timestamp": "2026-03-23T22:46:50.467Z",
+      "action": "product added"
     },
     {
       "id": "065d5160-db5c-48ee-b4e7-339364597413",
       "message": "sifyv: Deleted product: Rhona Ferguson",
-      "timestamp": "2026-03-23T22:50:42.865Z"
+      "timestamp": "2026-03-23T22:50:42.865Z",
+      "action": "product deleted"
+    },
+    {
+      "id": "5c590077-b2d8-4d03-9bb7-31c525157bc4",
+      "message": "admin: Adjusted stock for product Laptop Stand Aluminium: increase 5. Reason: found some hidden in some were",
+      "timestamp": "2026-03-25T19:24:30.087Z",
+      "action": "stock adjustment"
+    },
+    {
+      "id": "93ba521e-0026-448b-8ce0-e66e00ed3624",
+      "message": "admin: Adjusted stock for product Wireless Mouse Ergonomic: increase 30. Reason: sdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsd",
+      "timestamp": "2026-03-25T19:25:53.168Z",
+      "action": "stock adjustment"
+    },
+    {
+      "id": "cc8b8dac-a805-4f4e-bf0d-1800df98a853",
+      "message": "admin: Edited category from Computers & Laptops to Computers && Laptops",
+      "timestamp": "2026-03-25T19:27:21.141Z",
+      "action": "category edited"
+    },
+    {
+      "id": "276a34ab-7241-446b-ae99-7ad1ce515a6b",
+      "message": "admin: Edited category from Computers && Laptops to Computers & Laptops",
+      "timestamp": "2026-03-25T19:29:41.719Z",
+      "action": "category edited"
+    },
+    {
+      "id": "ee7ee37a-dd9e-4094-8462-98c022ad5eb1",
+      "message": "admin: Edited category from Computers & Laptops to Computers && Laptops",
+      "timestamp": "2026-03-25T19:58:18.485Z",
+      "action": "category edited"
+    },
+    {
+      "id": "e45027a0-5ac5-43ac-ba40-28a5ce98e607",
+      "message": "admin: Edited category from Computers && Laptops to Computers & Laptops",
+      "timestamp": "2026-03-25T19:58:38.333Z",
+      "action": "category edited"
+    },
+    {
+      "id": "923aebbb-4f7c-4994-9758-a2c67a606bca",
+      "message": "admin: Added category: dsdfsdfsdf",
+      "timestamp": "2026-03-25T19:59:24.406Z",
+      "action": "category added"
+    },
+    {
+      "id": "e4d1e6ea-35bf-4be8-8918-3910d71d56eb",
+      "message": "admin: Deleted category: dsdfsdfsdf",
+      "timestamp": "2026-03-25T19:59:28.730Z",
+      "action": "category deleted"
     }
   ],
   "users": [

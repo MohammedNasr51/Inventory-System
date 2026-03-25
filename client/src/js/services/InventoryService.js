@@ -35,7 +35,7 @@ export class InventoryService {
     } catch (error) {
       throw new Error("Failed to adjust stock. Please try again.");
     }
-    ActivityLogService.log(
+    ActivityLogService.log('stock adjustment',
       `Adjusted stock for product ${productName}: ${type} ${quantity}. Reason: ${reason}`,
     );
   }

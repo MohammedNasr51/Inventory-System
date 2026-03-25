@@ -9,7 +9,6 @@ export class ProductView {
     this.supplierService = new SupplierService();
   }
   template(products, categories) {
-    console.log("categories", categories);
     /******For test only  */
 
     /******************** */

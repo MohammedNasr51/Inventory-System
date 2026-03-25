@@ -36,7 +36,10 @@ export class CategoryService {
     await StorageManager.create("categories", category);
 
     //save the activity
-    await ActivityLogService.log(`Added category: ${categoryName}`);
+    await ActivityLogService.log(
+      "category added",
+      `Added category: ${categoryName}`,
+    );
   }
 
   /**************delete category methoud***********/
@@ -60,7 +63,10 @@ export class CategoryService {
 
     //delete category
     await StorageManager.delete("categories", categoryId);
-    await ActivityLogService.log(`Deleted category: ${deletedCategory.name}`);
+    await ActivityLogService.log(
+      "category deleted",
+      `Deleted category: ${deletedCategory.name}`,
+    );
   }
 
   /**************edit category methoud***********/
@@ -87,24 +93,8 @@ export class CategoryService {
 
     //save the activity
     await ActivityLogService.log(
+      "category edited",
       `Edited category from ${editedCategory.name} to ${newName}`,
     );
-
-    /***********************Update products that have old category name ******************** */
-    const productsToUpdate = await StorageManager.getWhere("products", {
-      category: editedCategory.name,
-    });
-
-    const updates = productsToUpdate.map((p) =>
-      StorageManager.patch("products", p.id, { category: newName }),
-    );
-    await Promise.all(updates);
-
-    //save the activity
-    if (productsToUpdate.length > 0) {
-      await ActivityLogService.log(
-        `Updated products category name from ${editedCategory.name} to ${newName}`,
-      );
-    }
   }
 }
