@@ -34,15 +34,11 @@ export class OrderService {
     const order = {
       id           : crypto.randomUUID(),
       supplierId   : data.supplierId,
-      supplierName : supplier.name,
       productId    : data.productId,
-      productName  : product.name,
-      productSku   : product.sku,
       quantity     : Number(data.quantity),
       orderDate    : data.orderDate,
       status       : 'Pending',
       receivedDate : null,
-      createdAt    : new Date().toISOString(),
     };
 
     const created = await StorageManager.create(RESOURCE, order);
