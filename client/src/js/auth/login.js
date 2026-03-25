@@ -31,7 +31,6 @@ async function handleLogin() {
     return;
   }
   let users = await StorageManager.getAll("users") || [];
-  console.log(users)
   // Check if user exists, if not create a new one
   let user = users.find((u) => u.username === name && u.password === passwordInput.value);
   if (!user) {

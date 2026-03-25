@@ -4,7 +4,7 @@
 
 import { guardAuth } from "./auth/authGuard.js";
 import { Router } from "./router.js";
-import { StorageManager } from "./utils/StorageManager.js";
+import { updateLowStockBadge } from "./utils/helpers.js";
 
 // ── View imports ─────────────────────────────────────────────────
 // import { DashboardView }      from './views/DashboardView.js';
@@ -89,24 +89,9 @@ function initSidebarToggle() {
 //    on the Products sidebar link whenever qty ≤ reorderLevel.
 //    Called at boot and can be called again after any adjustment.
 // ════════════════════════════════════════════════════════════════
-export async function updateLowStockBadge() {
-  try {
-    const products = await StorageManager.getAll("products");
-    const count = products.filter((p) => p.quantity <= p.reorder).length;
-    const badge = document.getElementById("low-stock-badge");
-    if (!badge) return;
+// See utils/helpers.js for the function definition.
 
-    if (count > 0) {
-      badge.textContent = count;
-      badge.classList.remove("d-none");
-    } else {
-      badge.classList.add("d-none");
-    }
-  } catch {
-    // Server unreachable — silently hide badge
-    document.getElementById("low-stock-badge")?.classList.add("d-none");
-  }
-}
+updateLowStockBadge();
 
 // ════════════════════════════════════════════════════════════════
 // 6. ROUTE MAP
