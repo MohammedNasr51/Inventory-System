@@ -4,10 +4,21 @@ const middlewares = jsonServer.defaults();
 
 const fs = require("fs");
 const path = require("path");
-const filePath = path.join(__dirname, "../db.json");
-const data = fs.readFileSync(filePath, "utf-8");
-const db = JSON.parse(data);
-const router = jsonServer.router(db);
+
+const isProd = process.env.NODE_ENV === "production";
+const sourcePath = path.join(__dirname, "../db.json");
+const tempPath = "/tmp/db.json";
+
+if (isProd) {
+  // In Vercel production, copy db.json to /tmp so json-server can write to it
+  if (!fs.existsSync(tempPath)) {
+    fs.copyFileSync(sourcePath, tempPath);
+  }
+}
+
+// Pass the string path to json-server so it automatically handles file persistence
+const routerPath = isProd ? tempPath : sourcePath;
+const router = jsonServer.router(routerPath);
 
 server.use(middlewares);
 
