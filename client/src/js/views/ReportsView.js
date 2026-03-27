@@ -83,7 +83,7 @@ export class ReportsView {
                     lowStock.length > 0
                       ? lowStock
                           .map((p) => {
-                            const reorderLevel = p.reorderLevel || 10;
+                            const reorderLevel = p.reorder || 10;
                             const shortage = p.quantity - reorderLevel;
                             const isHighShortage = shortage <= -8;
                             const rowClass = isHighShortage
@@ -93,16 +93,16 @@ export class ReportsView {
                                 : "";
                             return `
                           <tr class="${rowClass}">
-                            <td>${p.name}</td>
-                            <td><span class="sku-badge">${p.sku}</span></td>
+                            <td style="white-space: nowrap;">${p.name}</td>
+                            <td style="white-space: nowrap;"><span class="sku-badge">${p.sku}</span></td>
                             <td>${p.quantity}</td>
                             <td>${reorderLevel}</td>
-                            <td>
+                            <td style="white-space: nowrap;">
                               <span class="shortage-badge ${shortage < 0 ? "shortage-negative" : "shortage-zero"}">
                                 ${shortage} units
                               </span>
                             </td>
-                            <td>${p.supplierName || "—"}</td>
+                            <td style="white-space: nowrap;">${p.supplierName || "—"}</td>
                           </tr>
                         `;
                           })

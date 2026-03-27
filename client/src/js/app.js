@@ -90,8 +90,6 @@ function initSidebarToggle() {
 // ════════════════════════════════════════════════════════════════
 // See utils/helpers.js for the function definition.
 
-updateLowStockBadge();
-
 // ════════════════════════════════════════════════════════════════
 // 6. ROUTE MAP
 //    Hash string → View class.

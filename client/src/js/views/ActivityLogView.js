@@ -3,10 +3,8 @@ export class ActivityLogView {
   constructor() {
     this.logs = [];
   }
-  async render(container) {
-    this.logs = await ActivityLogService.getLogs();
-    document.getElementById("page-title").textContent = "Activity Log";
-    container.innerHTML = `
+  template(logs) {
+    return `
             <div class="card">
               <div
                 class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2"
@@ -36,7 +34,7 @@ export class ActivityLogView {
                       </tr>
                     </thead>
                     <tbody id="log-tbody">
-                     ${this.renderRows(this.logs)}
+                     ${this.renderRows(logs)}
                     </tbody>
                   </table>
                 </div>
@@ -44,7 +42,30 @@ export class ActivityLogView {
             </div>
           </div>
         `;
-    this.attachEvents(container);
+  }
+
+  async render(container) {
+    document.getElementById("page-title").textContent = "Activity Log";
+    container.innerHTML = `
+        <div class="d-flex justify-content-center align-items-center" style="min-height: 400px;">
+        <div class="spinner-border text-primary" role="status"></div>
+      </div>    
+    `;
+    this.loadData(container);
+  }
+
+  async loadData(container) {
+    try {
+      this.logs = await ActivityLogService.getLogs();
+      container.innerHTML = this.template(this.logs);
+      this.attachEvents(container);
+    } catch (error) {
+      container.innerHTML = `
+        <div class="alert alert-danger m-4">
+          Failed to load activity logs. Please check if the server is running.
+        </div>
+      `;
+    }
   }
   renderRows(logs=this.logs) {
     if (logs.length === 0) {
@@ -69,7 +90,7 @@ export class ActivityLogView {
           actionClass = "bg-success";
         }
         return `<tr>
-                  <td class="text-muted" style="font-size: 12px">
+                  <td style="white-space: nowrap;" class="text-muted" style="font-size: 12px">
                   ${new Date(log.timestamp).toLocaleString()}
                   </td>
                   <td>

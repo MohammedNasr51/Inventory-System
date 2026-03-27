@@ -272,15 +272,15 @@ export class OrderView {
               ${this._esc(o.id.slice(0, 8))}
             </span>
           </td>
-          <td>${this._esc(supplierName)}</td>
+          <td style="white-space: nowrap;">${this._esc(supplierName)}</td>
           <td>
-            <div>${this._esc(productName)}</div>
+            <div style="white-space: nowrap;">${this._esc(productName)}</div>
             <div class="text-muted" style="font-size:11px;">${this._esc(productSku)}</div>
           </td>
           <td class="text-center">${o.quantity}</td>
-          <td>${this._formatDate(o.orderDate)}</td>
+          <td style="white-space: nowrap;">${this._formatDate(o.orderDate)}</td>
           <td>${this._statusBadge(o.status)}</td>
-          <td>${this._actionButtons(o)}</td>
+          <td style="white-space: nowrap;">${this._actionButtons(o)}</td>
         </tr>
       `;
     }).join('');

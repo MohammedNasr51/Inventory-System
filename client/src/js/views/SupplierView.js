@@ -205,7 +205,7 @@ export class SupplierView {
       <tr>
         <td>${this._esc(s.name)}</td>
         <td>${this._esc(s.contact)}</td>
-        <td>${this._esc(s.phone || '—')}</td>
+        <td style="white-space: nowrap;">${this._esc(s.phone || '—')}</td>
         <td>
           <a href="mailto:${this._esc(s.email)}" style="color:var(--brand);">
             ${this._esc(s.email)}

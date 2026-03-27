@@ -44,7 +44,7 @@ export class DashboardView {
         <div class="row g-3">
 
           <!-- Low Stock Table -->
-          <div class="col-lg-7">
+          <div class="col-lg-6">
             <div class="dash-card">
               <div class="dash-card-header">
                 <div class="d-flex align-items-center gap-2">
@@ -76,8 +76,8 @@ export class DashboardView {
                             <tr class="${rowClass}">
                               <td>${item.name}</td>
                               <td>${item.currentQty}</td>
-                              <td>${item.reorderLevel || 10}</td>
-                              <td><span class="status-badge ${badgeClass}">${item.status}</span></td>
+                              <td>${item.reorder || 10}</td>
+                              <td><span style="white-space: nowrap;" class="status-badge ${badgeClass}">${item.status}</span></td>
                             </tr>
                           `;
                           })
@@ -90,7 +90,7 @@ export class DashboardView {
           </div>
 
           <!-- Recent Activity -->
-          <div class="col-lg-5">
+          <div class="col-lg-6">
             <div class="dash-card">
               <div class="dash-card-header">
                 <div class="d-flex align-items-center gap-2">
@@ -111,7 +111,19 @@ export class DashboardView {
                     </thead>
                     <tbody>
                       ${recentActivity
-                        .map((log) => {
+                          .map((log) => {
+                                            let actionClass = "bg-secondary";
+                          if (log.action.includes("added")) {
+                            actionClass = "bg-primary";
+                          } else if (log.action.includes("deleted")) {
+                            actionClass = "bg-danger";
+                          } else if (log.action.includes("edited")) {
+                            actionClass = "bg-secondary";
+                          } else if (log.action.includes("adjustment")) {
+                            actionClass = "bg-warning text-dark";
+                          } else if (log.action.includes("received")) {
+                            actionClass = "bg-success";
+                          }
                           const timeStr = new Date(
                             log.timestamp,
                           ).toLocaleTimeString([], {
@@ -122,7 +134,7 @@ export class DashboardView {
                           return `
                           <tr>
                             <td class="activity-time">${timeStr}</td>
-                            <td class="activity-action">${log.action || ""}</td>
+                            <td class="activity-action"><span class="badge ${actionClass}">${log.action[0].toUpperCase() + log.action.slice(1)}</span></td>
                             <td>
                               <div class="activity-details-wrap" title="${(log.message || log.details || "").replace(/"/g, "&quot;")}">
                                 ${log.message || log.details || ""}
@@ -398,13 +410,13 @@ export class DashboardView {
         ? "metric-value green"
         : "metric-value";
     return `
-      <div class="col-md-3">
+      <div class="col-lg-4 col-md-6 col-xl-3">
         <div class="metric-card">
           <div class="metric-icon" style="background:${bgColor}; color:${iconColor};">
             <i class="bi ${icon}"></i>
           </div>
           <div>
-            <div class="metric-label">${label}</div>
+            <div style="white-space: nowrap;" class="metric-label">${label}</div>
             <div class="${valueClass}">${value}</div>
           </div>
         </div>

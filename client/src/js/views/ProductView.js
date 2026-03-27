@@ -194,7 +194,7 @@ export class ProductView {
         return `
         <tr class="${rowClass}">
           <td>${product.name}</td>
-          <td><code>${product.sku}</code></td>
+          <td style="white-space: nowrap;"><code>${product.sku}</code></td>
           <td>${product.category}</td>
           <td>${product.supplier ?? "--"}</td>
           <td>$${product.price}</td>
@@ -474,6 +474,16 @@ export class ProductView {
   /******************************************************************************************************************* */
   async render(container) {
     this.container = container; // save it
+    document.getElementById("page-title").innerText = "Products";
+    container.innerHTML = `
+        <div class="d-flex justify-content-center align-items-center" style="min-height: 400px;">
+        <div class="spinner-border text-primary" role="status"></div>
+      </div>    
+    `;
+    this.loadData(container);
+  }
+
+  async loadData(container) {
     try {
       const [products, categories,suppliers] = await Promise.all([
         this.productService.getAll(),
@@ -488,7 +498,7 @@ export class ProductView {
       this.attachEvents();
     } catch (err) {
       console.error(err);
-      container.innerHTML = `<div class="alert alert-danger">Error loading data: ${err.message}</div>`;
+      container.innerHTML = `<div class="alert alert-danger m-4">Error loading data: ${err.message}</div>`;
     }
   }
 }
