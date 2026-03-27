@@ -9,11 +9,8 @@ const isProd = process.env.NODE_ENV === "production";
 const sourcePath = path.join(__dirname, "../db.json");
 const tempPath = "/tmp/db.json";
 
-if (isProd) {
-  // In Vercel production, copy db.json to /tmp so json-server can write to it
-  if (!fs.existsSync(tempPath)) {
-    fs.copyFileSync(sourcePath, tempPath);
-  }
+if (!fs.existsSync(tempPath)) {
+  fs.copyFileSync(sourcePath, tempPath);
 }
 
 // Pass the string path to json-server so it automatically handles file persistence
@@ -62,7 +59,6 @@ server.use(
 
 server.use(router);
 
-server.use(router);
 
 if (process.env.NODE_ENV !== "production") {
   server.listen(3000, () => {
