@@ -9,7 +9,7 @@ const isProd = process.env.NODE_ENV === "production";
 const sourcePath = path.join(__dirname, "../db.json");
 const tempPath = "/tmp/db.json";
 
-if (!fs.existsSync(tempPath)) {
+if (!fs.existsSync(tempPath) && isProd) {
   fs.copyFileSync(sourcePath, tempPath);
 }
 
