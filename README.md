@@ -96,9 +96,3 @@ This project was developed by:
     ├── db.json          # Database file
     └── api/             # Server-side logic
 ```
-
----
-
-## 📄 License
-
-This project is licensed under the MIT License.
