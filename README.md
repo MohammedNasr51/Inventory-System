@@ -34,7 +34,7 @@ This project was developed by:
 ### Frontend
 *   **Vite:** Next-generation frontend tooling.
 *   **Vanilla JavaScript (ES6+):** Modular architecture for state management and routing.
-*   **Tailwind CSS:** For a responsive and modern UI design.
+*   **BootStrap:** For a responsive and modern UI design.
 *   **Single Page Application (SPA):** Custom router for seamless navigation.
 
 ### Backend
@@ -71,7 +71,7 @@ This project was developed by:
     npm install
     npm run dev
     ```
-    The application will be available at `http://localhost:5173`.
+    The application will be available at `http://localhost:8080`.
 
 ### Default Credentials
 *   **Username:** `admin`
