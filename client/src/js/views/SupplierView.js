@@ -2,14 +2,38 @@ import { SupplierService } from '../services/SupplierService.js';
 
 export class SupplierView {
 
+  // ******************** RENDER + INIT ********************
+
   render(container) {
     document.getElementById('page-title').textContent = 'Suppliers';
-    container.innerHTML = this._html();
 
-    this._bindSearch();
-    this._bindOpenAdd();
-    this._bindFormSubmit();
-    this._renderTable();
+    container.innerHTML = `
+      <div class="d-flex justify-content-center align-items-center" style="min-height: 300px;">
+        <div class="spinner-border text-primary" role="status"></div>
+      </div>
+    `;
+
+    this.init(container);
+  }
+
+  async init(container) {
+    try {
+      const suppliers = await SupplierService.getAll();
+      const counts    = await Promise.all(
+        suppliers.map(s => SupplierService.getProductCount(s.id))
+      );
+      container.innerHTML = this._html();
+      this._bindSearch();
+      this._bindOpenAdd();
+      this._bindFormSubmit();
+      this._paintTable(suppliers, counts);
+    } catch {
+      container.innerHTML = `
+        <div class="alert alert-danger m-4">
+          <i class="bi bi-wifi-off me-2"></i> Error loading suppliers. Is the server running?
+        </div>
+      `;
+    }
   }
 
   // ******************** HTML SKELETON ********************
@@ -46,14 +70,7 @@ export class SupplierView {
                   <th>Actions</th>
                 </tr>
               </thead>
-              <tbody id="suppliers-tbody">
-                <tr>
-                  <td colspan="6" class="text-center py-4">
-                    <div class="spinner-border spinner-border-sm text-secondary me-2"></div>
-                    Loading suppliers…
-                  </td>
-                </tr>
-              </tbody>
+              <tbody id="suppliers-tbody"></tbody>
             </table>
           </div>
 
@@ -150,11 +167,71 @@ export class SupplierView {
     `;
   }
 
-  // ******************** TABLE RENDERING ********************
+  // ******************** TABLE PAINTING ********************
 
-  async _renderTable(filter = '') {
+  _paintTable(suppliers, counts, filter = '') {
     const tbody = document.getElementById('suppliers-tbody');
     const empty = document.getElementById('suppliers-empty');
+    if (!tbody) return;
+
+    let rows = suppliers;
+
+    if (filter) {
+      rows = suppliers.filter((s, i) => {
+        const match =
+          s.name.toLowerCase().includes(filter)    ||
+          s.contact.toLowerCase().includes(filter) ||
+          s.email.toLowerCase().includes(filter);
+        return match;
+      });
+    }
+
+    if (rows.length === 0) {
+      tbody.innerHTML = '';
+      empty?.classList.remove('d-none');
+      return;
+    }
+
+    empty?.classList.add('d-none');
+
+    tbody.innerHTML = rows.map(s => {
+      const idx   = suppliers.indexOf(s);
+      const count = counts[idx] ?? 0;
+      return `
+        <tr>
+          <td>${this._esc(s.name)}</td>
+          <td>${this._esc(s.contact)}</td>
+          <td style="white-space:nowrap;">${this._esc(s.phone || '—')}</td>
+          <td>
+            <a href="mailto:${this._esc(s.email)}" style="color:var(--brand);">
+              ${this._esc(s.email)}
+            </a>
+          </td>
+          <td>
+            <span class="badge bg-info text-white rounded-pill">${count}</span>
+          </td>
+          <td style="white-space:nowrap;">
+            <button class="btn btn-sm btn-outline-primary me-1"
+                    data-action="edit" data-id="${s.id}" title="Edit">
+              <i class="bi bi-pencil"></i>
+            </button>
+            <button class="btn btn-sm btn-outline-danger"
+                    data-action="delete" data-id="${s.id}"
+                    data-name="${this._esc(s.name)}" title="Delete">
+              <i class="bi bi-trash"></i>
+            </button>
+          </td>
+        </tr>
+      `;
+    }).join('');
+
+    this._bindTableActions();
+  }
+
+  // ******************** TABLE REFRESH ********************
+
+  async _refreshTable() {
+    const tbody = document.getElementById('suppliers-tbody');
     if (!tbody) return;
 
     tbody.innerHTML = `
@@ -166,77 +243,25 @@ export class SupplierView {
       </tr>
     `;
 
-    let suppliers;
-    try {
-      suppliers = await SupplierService.getAll();
-    } catch {
-      tbody.innerHTML = `
-        <tr>
-          <td colspan="6" class="text-center py-4 text-danger">
-            <i class="bi bi-wifi-off me-2"></i>
-            Could not load suppliers. Is the server running?
-          </td>
-        </tr>
-      `;
-      return;
-    }
-
-    if (filter) {
-      suppliers = suppliers.filter(s =>
-        s.name.toLowerCase().includes(filter)    ||
-        s.contact.toLowerCase().includes(filter) ||
-        s.email.toLowerCase().includes(filter)
-      );
-    }
-
-    if (suppliers.length === 0) {
-      tbody.innerHTML = '';
-      empty?.classList.remove('d-none');
-      return;
-    }
-
-    empty?.classList.add('d-none');
-
-    const counts = await Promise.all(
+    const suppliers = await SupplierService.getAll();
+    const counts    = await Promise.all(
       suppliers.map(s => SupplierService.getProductCount(s.id))
     );
 
-    tbody.innerHTML = suppliers.map((s, i) => `
-      <tr>
-        <td>${this._esc(s.name)}</td>
-        <td>${this._esc(s.contact)}</td>
-        <td style="white-space: nowrap;">${this._esc(s.phone || '—')}</td>
-        <td>
-          <a href="mailto:${this._esc(s.email)}" style="color:var(--brand);">
-            ${this._esc(s.email)}
-          </a>
-        </td>
-        <td>
-          <span class="badge bg-info text-white rounded-pill">${counts[i]}</span>
-        </td>
-        <td style="white-space: nowrap;">
-          <button class="btn btn-sm btn-outline-primary me-1"
-                  data-action="edit" data-id="${s.id}" title="Edit">
-            <i class="bi bi-pencil"></i>
-          </button>
-          <button class="btn btn-sm btn-outline-danger"
-                  data-action="delete" data-id="${s.id}"
-                  data-name="${this._esc(s.name)}" title="Delete">
-            <i class="bi bi-trash"></i>
-          </button>
-        </td>
-      </tr>
-    `).join('');
-
-    this._bindTableActions();
+    this._paintTable(suppliers, counts, this._currentFilter());
   }
 
   // ******************** EVENT BINDING ********************
 
   _bindSearch() {
     document.getElementById('supplier-search')
-      ?.addEventListener('input', e => {
-        this._renderTable(e.target.value.trim().toLowerCase());
+      ?.addEventListener('input', async e => {
+        const filter    = e.target.value.trim().toLowerCase();
+        const suppliers = await SupplierService.getAll();
+        const counts    = await Promise.all(
+          suppliers.map(s => SupplierService.getProductCount(s.id))
+        );
+        this._paintTable(suppliers, counts, filter);
       });
   }
 
@@ -309,7 +334,7 @@ export class SupplierView {
       bootstrap.Modal.getInstance(document.getElementById('supplierDeleteModal')).hide();
 
       if (result.ok) {
-        this._renderTable(this._currentFilter());
+        await this._refreshTable();
         this._toast('Supplier deleted.', 'success');
       } else {
         this._toast(result.error, 'danger');
@@ -344,7 +369,7 @@ export class SupplierView {
     }
 
     bootstrap.Modal.getInstance(document.getElementById('supplierModal')).hide();
-    this._renderTable(this._currentFilter());
+    await this._refreshTable();
     this._toast(
       id ? 'Supplier updated successfully.' : 'Supplier added successfully.',
       'success'
@@ -372,7 +397,6 @@ export class SupplierView {
     const btn   = document.getElementById('supplier-submit-btn');
     const label = document.getElementById('supplier-submit-label');
     if (!btn || !label) return;
-
     btn.disabled      = loading;
     label.textContent = loading ? 'Saving…' : (
       document.getElementById('supplier-id').value.trim() ? 'Save changes' : 'Save supplier'

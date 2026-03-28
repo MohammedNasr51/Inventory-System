@@ -3,16 +3,45 @@ import { StorageManager } from '../utils/StorageManager.js';
 
 export class OrderView {
 
+  // ******************** RENDER + INIT ********************
+
   render(container) {
     document.getElementById('page-title').textContent = 'Purchase Orders';
-    container.innerHTML = this._html();
 
-    this._bindSearch();
-    this._bindFilterTabs();
-    this._bindOpenAdd();
-    this._bindSupplierChange();
-    this._bindFormSubmit();
-    this._renderTable();
+    container.innerHTML = `
+      <div class="d-flex justify-content-center align-items-center" style="min-height: 300px;">
+        <div class="spinner-border text-primary" role="status"></div>
+      </div>
+    `;
+
+    this.init(container);
+  }
+
+  async init(container) {
+    try {
+      const [orders, suppliers, products] = await Promise.all([
+        OrderService.getAll(),
+        StorageManager.getAll('suppliers'),
+        StorageManager.getAll('products'),
+      ]);
+
+      this._suppliers = suppliers;
+      this._products  = products;
+
+      container.innerHTML = this._html();
+      this._bindSearch();
+      this._bindFilterTabs();
+      this._bindOpenAdd();
+      this._bindSupplierChange();
+      this._bindFormSubmit();
+      this._paintTable(orders);
+    } catch {
+      container.innerHTML = `
+        <div class="alert alert-danger m-4">
+          <i class="bi bi-wifi-off me-2"></i> Error loading orders. Is the server running?
+        </div>
+      `;
+    }
   }
 
   // ******************** HTML SKELETON ********************
@@ -58,14 +87,7 @@ export class OrderView {
                   <th>Action</th>
                 </tr>
               </thead>
-              <tbody id="orders-tbody">
-                <tr>
-                  <td colspan="7" class="text-center py-4">
-                    <div class="spinner-border spinner-border-sm text-secondary me-2"></div>
-                    Loading orders…
-                  </td>
-                </tr>
-              </tbody>
+              <tbody id="orders-tbody"></tbody>
             </table>
           </div>
 
@@ -186,62 +208,29 @@ export class OrderView {
     `;
   }
 
-  // ******************** TABLE RENDERING ********************
+  // ******************** TABLE PAINTING ********************
 
-  async _renderTable(filter = 'all', search = '') {
+  _paintTable(orders, filter = 'all', search = '') {
     const tbody = document.getElementById('orders-tbody');
     const empty = document.getElementById('orders-empty');
     if (!tbody) return;
 
-    tbody.innerHTML = `
-      <tr>
-        <td colspan="7" class="text-center py-4">
-          <div class="spinner-border spinner-border-sm text-secondary me-2"></div>
-          Loading…
-        </td>
-      </tr>
-    `;
-
-    let orders, suppliers, products;
-    try {
-      // Fetch all three at the same time
-      [orders, suppliers, products] = await Promise.all([
-        OrderService.getAll(),
-        StorageManager.getAll('suppliers'),
-        StorageManager.getAll('products'),
-      ]);
-    } catch {
-      tbody.innerHTML = `
-        <tr>
-          <td colspan="7" class="text-center py-4 text-danger">
-            <i class="bi bi-wifi-off me-2"></i>
-            Could not load orders. Is the server running?
-          </td>
-        </tr>
-      `;
-      return;
-    }
-
-    // Build lookup maps so we can resolve names by id instantly
     const supplierMap = {};
-    suppliers.forEach(s => supplierMap[s.id] = s.name);
+    this._suppliers.forEach(s => supplierMap[s.id] = s.name);
 
     const productMap = {};
-    products.forEach(p => productMap[p.id] = p);
+    this._products.forEach(p => productMap[p.id] = p);
 
-    // Sort newest first
-    orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    let rows = [...orders].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
-    // Status filter
     if (filter !== 'all') {
-      orders = orders.filter(o => o.status.toLowerCase() === filter.toLowerCase());
+      rows = rows.filter(o => o.status.toLowerCase() === filter.toLowerCase());
     }
 
-    // Search filter — runs against resolved names not raw ids
     if (search) {
-      orders = orders.filter(o => {
+      rows = rows.filter(o => {
         const supplierName = supplierMap[o.supplierId] ?? '';
-        const productName  = (productMap[o.productId])?.name ?? '';
+        const productName  = productMap[o.productId]?.name ?? '';
         return (
           supplierName.toLowerCase().includes(search) ||
           productName.toLowerCase().includes(search)  ||
@@ -250,7 +239,7 @@ export class OrderView {
       });
     }
 
-    if (orders.length === 0) {
+    if (rows.length === 0) {
       tbody.innerHTML = '';
       empty?.classList.remove('d-none');
       return;
@@ -258,8 +247,7 @@ export class OrderView {
 
     empty?.classList.add('d-none');
 
-    tbody.innerHTML = orders.map(o => {
-      // Resolve names from the maps using the stored ids
+    tbody.innerHTML = rows.map(o => {
       const supplierName = supplierMap[o.supplierId] ?? '—';
       const product      = productMap[o.productId];
       const productName  = product?.name ?? '—';
@@ -272,20 +260,47 @@ export class OrderView {
               ${this._esc(o.id.slice(0, 8))}
             </span>
           </td>
-          <td style="white-space: nowrap;">${this._esc(supplierName)}</td>
+          <td style="white-space:nowrap;">${this._esc(supplierName)}</td>
           <td>
-            <div style="white-space: nowrap;">${this._esc(productName)}</div>
+            <div style="white-space:nowrap;">${this._esc(productName)}</div>
             <div class="text-muted" style="font-size:11px;">${this._esc(productSku)}</div>
           </td>
           <td class="text-center">${o.quantity}</td>
-          <td style="white-space: nowrap;">${this._formatDate(o.orderDate)}</td>
+          <td style="white-space:nowrap;">${this._formatDate(o.orderDate)}</td>
           <td>${this._statusBadge(o.status)}</td>
-          <td style="white-space: nowrap;">${this._actionButtons(o)}</td>
+          <td style="white-space:nowrap;">${this._actionButtons(o)}</td>
         </tr>
       `;
     }).join('');
 
     this._bindTableActions();
+  }
+
+  // ******************** TABLE REFRESH ********************
+
+  async _refreshTable() {
+    const tbody = document.getElementById('orders-tbody');
+    if (!tbody) return;
+
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="7" class="text-center py-4">
+          <div class="spinner-border spinner-border-sm text-secondary me-2"></div>
+          Loading…
+        </td>
+      </tr>
+    `;
+
+    const [orders, suppliers, products] = await Promise.all([
+      OrderService.getAll(),
+      StorageManager.getAll('suppliers'),
+      StorageManager.getAll('products'),
+    ]);
+
+    this._suppliers = suppliers;
+    this._products  = products;
+
+    this._paintTable(orders, this._activeFilter(), this._activeSearch());
   }
 
   // ******************** STATUS + ACTION HELPERS ********************
@@ -327,14 +342,15 @@ export class OrderView {
 
   _bindSearch() {
     document.getElementById('order-search')
-      ?.addEventListener('input', e => {
-        this._renderTable(this._activeFilter(), e.target.value.trim().toLowerCase());
+      ?.addEventListener('input', async e => {
+        const orders = await OrderService.getAll();
+        this._paintTable(orders, this._activeFilter(), e.target.value.trim().toLowerCase());
       });
   }
 
   _bindFilterTabs() {
     document.getElementById('order-filter-tabs')
-      ?.addEventListener('click', e => {
+      ?.addEventListener('click', async e => {
         const btn = e.target.closest('[data-filter]');
         if (!btn) return;
 
@@ -342,7 +358,8 @@ export class OrderView {
           .forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
 
-        this._renderTable(btn.dataset.filter, this._activeSearch());
+        const orders = await OrderService.getAll();
+        this._paintTable(orders, btn.dataset.filter, this._activeSearch());
       });
   }
 
@@ -382,7 +399,7 @@ export class OrderView {
 
   // ******************** MODAL HELPERS ********************
 
-  async _openModal() {
+  _openModal() {
     document.getElementById('orderForm').reset();
     this._hideError();
     this._setSubmitLoading(false);
@@ -390,7 +407,7 @@ export class OrderView {
     document.getElementById('order-date').value =
       new Date().toISOString().split('T')[0];
 
-    await this._populateSuppliers();
+    this._populateSuppliers();
 
     const productSelect = document.getElementById('order-product');
     productSelect.innerHTML = '<option value="">— select supplier first —</option>';
@@ -417,7 +434,7 @@ export class OrderView {
       bootstrap.Modal.getInstance(document.getElementById('orderCancelModal')).hide();
 
       if (result.ok) {
-        this._renderTable(this._activeFilter(), this._activeSearch());
+        await this._refreshTable();
         this._toast('Order cancelled.', 'warning');
       } else {
         this._toast(result.error, 'danger');
@@ -443,7 +460,7 @@ export class OrderView {
       bootstrap.Modal.getInstance(document.getElementById('orderDeleteModal')).hide();
 
       if (result.ok) {
-        this._renderTable(this._activeFilter(), this._activeSearch());
+        await this._refreshTable();
         this._toast('Order deleted.', 'success');
       } else {
         this._toast(result.error, 'danger');
@@ -453,30 +470,22 @@ export class OrderView {
 
   // ******************** DROPDOWN POPULATION ********************
 
-  async _populateSuppliers() {
+  _populateSuppliers() {
     const select = document.getElementById('order-supplier');
 
-    let suppliers;
-    try {
-      suppliers = await StorageManager.getAll('suppliers');
-    } catch {
-      select.innerHTML = '<option value="">Could not load suppliers</option>';
-      return;
-    }
-
-    if (suppliers.length === 0) {
+    if (!this._suppliers || this._suppliers.length === 0) {
       select.innerHTML = '<option value="">No suppliers added yet</option>';
       return;
     }
 
     select.innerHTML =
       '<option value="">— select supplier —</option>' +
-      suppliers.map(s =>
+      this._suppliers.map(s =>
         `<option value="${s.id}">${this._esc(s.name)}</option>`
       ).join('');
   }
 
-  async _populateProducts(supplierId) {
+  _populateProducts(supplierId) {
     const select = document.getElementById('order-product');
 
     if (!supplierId) {
@@ -485,26 +494,18 @@ export class OrderView {
       return;
     }
 
-    select.innerHTML = '<option value="">Loading…</option>';
-    select.disabled  = true;
+    const filtered = this._products.filter(p => p.supplierId === supplierId);
 
-    let products;
-    try {
-      products = await StorageManager.getWhere('products', { supplierId });
-    } catch {
-      select.innerHTML = '<option value="">Could not load products</option>';
-      return;
-    }
-
-    if (products.length === 0) {
+    if (filtered.length === 0) {
       select.innerHTML = '<option value="">No products linked to this supplier</option>';
+      select.disabled  = true;
       return;
     }
 
     select.disabled  = false;
     select.innerHTML =
       '<option value="">— select product —</option>' +
-      products.map(p =>
+      filtered.map(p =>
         `<option value="${p.id}">${this._esc(p.name)} (${this._esc(p.sku)})</option>`
       ).join('');
   }
@@ -532,7 +533,7 @@ export class OrderView {
     }
 
     bootstrap.Modal.getInstance(document.getElementById('orderModal')).hide();
-    this._renderTable(this._activeFilter(), this._activeSearch());
+    await this._refreshTable();
     this._toast('Order created successfully.', 'success');
   }
 
@@ -540,7 +541,7 @@ export class OrderView {
     const result = await OrderService.markReceived(id);
 
     if (result.ok) {
-      this._renderTable(this._activeFilter(), this._activeSearch());
+      await this._refreshTable();
       this._toast('Order received — stock updated.', 'success');
     } else {
       this._toast(result.error, 'danger');
