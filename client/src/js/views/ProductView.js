@@ -9,8 +9,6 @@ export class ProductView {
     this.categoryService = new CategoryService();
   }
   template(products, categories, suppliers) {
-    /******For test only  */
-
     /******************** */
     document.getElementById("page-title").innerText = "Products";
     return `

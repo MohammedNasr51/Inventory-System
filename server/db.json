@@ -31,6 +31,10 @@
     {
       "id": "cat-008",
       "name": "Power & Charging"
+    },
+    {
+      "name": "k",
+      "id": "8a60af50-1e73-4c91-9390-6d9d01820846"
     }
   ],
   "suppliers": [
@@ -534,6 +538,18 @@
       "message": "admin: Deleted product: mobile",
       "timestamp": "2026-04-01T07:41:53.432Z",
       "action": "product deleted"
+    },
+    {
+      "id": "291e4f49-2f77-4e0f-9c21-69663e917871",
+      "message": "admin: Added category: hh",
+      "timestamp": "2026-04-01T07:52:27.870Z",
+      "action": "category added"
+    },
+    {
+      "id": "4d090040-c4fc-4598-9d54-d92b98bdb763",
+      "message": "admin: Edited category from hh to k",
+      "timestamp": "2026-04-01T07:52:38.586Z",
+      "action": "category edited"
     }
   ],
   "users": [
